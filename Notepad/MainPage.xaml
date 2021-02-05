@@ -178,7 +178,9 @@
             <muxc:RowDefinition Height="auto"/>
             <muxc:RowDefinition Height="*"/>
         </muxc:Grid.RowDefinitions>
-        <muxc:TextBox Style="{StaticResource ModernTextBoxStyle}"
+        <muxc:TextBox 
+            x:Name="inputText"
+            Style="{StaticResource ModernTextBoxStyle}"
             Background="{ThemeResource SystemControlAcrylicWindowBrush}" Grid.Row="2"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -199,7 +201,11 @@
             <muxc:MenuBarItem Title="File">
                 <MenuFlyoutItem Text="New"/>
                 <MenuFlyoutItem Text="Open..."/>
-                <MenuFlyoutItem Text="Save"/>
+                <MenuFlyoutItem x:Name="FileSaveButton" Text="Save" Click="FileSaveButton_Click">
+                    <MenuFlyoutItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="S" Modifiers="Control"/>
+                    </MenuFlyoutItem.KeyboardAccelerators>
+                </MenuFlyoutItem>
                 <MenuFlyoutItem Text="Exit"/>
             </muxc:MenuBarItem>
             <muxc:MenuBarItem Title="Edit">
