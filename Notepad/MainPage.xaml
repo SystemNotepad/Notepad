@@ -206,7 +206,7 @@
                         <KeyboardAccelerator Key="S" Modifiers="Control"/>
                     </MenuFlyoutItem.KeyboardAccelerators>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem Text="Exit"/>
+                <MenuFlyoutItem x:Name="FileExit" Text="Exit" Click="FileExit_Click"/>
             </muxc:MenuBarItem>
             <muxc:MenuBarItem Title="Edit">
                 <MenuFlyoutItem Text="Undo"/>
@@ -218,6 +218,6 @@
                 <MenuFlyoutItem Text="About"/>
             </muxc:MenuBarItem>
         </muxc:MenuBar>
-        <muxc:TextBlock x:Name="titleBarText" Text="Notepad"  Margin="12,8,0,0"  Style="{StaticResource CaptionTextBlockStyle}"/>
+        <TextBlock x:Name="titleBarText" Text="Notepad"  Margin="12,8,0,8"  Style="{StaticResource CaptionTextBlockStyle}"/>
     </muxc:Grid>
 </Page>

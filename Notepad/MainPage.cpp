@@ -2,6 +2,7 @@
 #include "MainPage.h"
 #include "MainPage.g.cpp"
 
+
 using namespace winrt;
 using namespace Windows::UI::Xaml;
 using namespace Windows::Foundation;
@@ -13,6 +14,7 @@ namespace winrt::Notepad::implementation
     MainPage::MainPage()
     {
         InitializeComponent();
+        titleBarText().Text(L"Untitled - Notepad");
     }
 
     int32_t MainPage::MyProperty()
@@ -28,6 +30,12 @@ namespace winrt::Notepad::implementation
     void MainPage::FileSaveButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::UI::Xaml::RoutedEventArgs const&)
     {
         SaveFile();
+    }
+
+    void MainPage::FileExit_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::UI::Xaml::RoutedEventArgs const&)
+    {
+        // Check wheather the textbox contain string and not saved!
+        Application::Current().Exit();
     }
 
     IAsyncAction MainPage::SaveFile()
