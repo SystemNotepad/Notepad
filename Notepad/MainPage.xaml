@@ -200,7 +200,11 @@
         <muxc:MenuBar VerticalAlignment="Top" Grid.Row="1">
             <muxc:MenuBarItem Title="File">
                 <MenuFlyoutItem Text="New"/>
-                <MenuFlyoutItem Text="Open..."/>
+                <MenuFlyoutItem x:Name='FileOpenButton' Text="Open..." Click="FileOpenButton_Click">
+                    <MenuFlyoutItem.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="O" Modifiers="Control"/>
+                    </MenuFlyoutItem.KeyboardAccelerators>
+                </MenuFlyoutItem>
                 <MenuFlyoutItem x:Name="FileSaveButton" Text="Save" Click="FileSaveButton_Click">
                     <MenuFlyoutItem.KeyboardAccelerators>
                         <KeyboardAccelerator Key="S" Modifiers="Control"/>

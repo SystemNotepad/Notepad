@@ -62,7 +62,47 @@ namespace winrt::Notepad::implementation
             co_await Windows::Storage::CachedFileManager::CompleteUpdatesAsync(file);
         }
     }
+
+    void MainPage::FileOpenButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e)
+    {
+        OpenFileAsync();
+    }
+
+    IAsyncAction MainPage::OpenFileAsync() 
+    {
+        auto lifetime = get_strong();
+
+        // Clear previous returned file name, if it exists, between iterations of this scenario
+
+        FileOpenPicker openPicker;
+        openPicker.ViewMode(PickerViewMode::Thumbnail);
+        openPicker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
+        openPicker.FileTypeFilter().ReplaceAll({ L".txt"/*, L".md"*/ });
+        StorageFile file = co_await openPicker.PickSingleFileAsync();
+        if (file != nullptr)
+        {
+            UpdateTitleText(file.Name());
+            // Clear previous returned file text.
+            inputText().Text(L""); 
+            hstring fileContent = co_await FileIO::ReadTextAsync(file);
+            inputText().Text(fileContent);// Application now has read/write access to the picked file  
+            
+        }
+        else
+        {
+            // OutputTextBlock().Text(L"Operation cancelled.");
+            // Operation Cancelled.
+        }
+    }
+
+    void MainPage::UpdateTitleText(hstring title) 
+    {
+        titleBarText().Text(title + L" - Notepad");
+    }
 }
+
+
+
 
 
 
