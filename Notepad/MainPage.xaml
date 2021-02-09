@@ -219,7 +219,7 @@
                 <MenuFlyoutItem Text="Paste"/>
             </muxc:MenuBarItem>
             <muxc:MenuBarItem Title="Help">
-                <MenuFlyoutItem Text="About"/>
+                <MenuFlyoutItem x:Name="FileAboutButton" Text="About" Click="FileAboutButton_Click"/>
             </muxc:MenuBarItem>
         </muxc:MenuBar>
         <TextBlock x:Name="titleBarText" Text="Notepad"  Margin="12,8,0,8"  Style="{StaticResource CaptionTextBlockStyle}"/>

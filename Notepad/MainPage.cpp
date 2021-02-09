@@ -8,9 +8,13 @@ using namespace Windows::UI::Xaml;
 using namespace Windows::Foundation;
 using namespace Windows::Storage;
 using namespace Windows::Storage::Pickers;
+using namespace Windows::UI::Xaml::Controls;
 
 namespace winrt::Notepad::implementation
 {
+    // Global Variables:
+    Windows::Storage::StorageFile m_file{ nullptr };
+
     MainPage::MainPage()
     {
         InitializeComponent();
@@ -34,9 +38,42 @@ namespace winrt::Notepad::implementation
 
     void MainPage::FileExit_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::UI::Xaml::RoutedEventArgs const&)
     {
-        // Check wheather the textbox contain string and not saved!
-        Application::Current().Exit();
+        ExitApp();   
     }
+
+    IAsyncAction MainPage::ExitApp()
+    {
+        // Check wheather the textbox contain string and not saved!
+        hstring userText = inputText().Text();
+        if (inputText().Text().c_str() != L"" && nullptr == m_file)
+        {
+            auto dialog = ContentDialog();
+            dialog.Content(box_value(L"Do you want to save changes to Untitled?"));
+            dialog.Title(box_value(L"Notepad"));
+            dialog.CloseButtonText(L"Cancel");
+            dialog.PrimaryButtonText(L"Save");
+            dialog.SecondaryButtonText(L"Don't save");
+            ContentDialogResult result = co_await dialog.ShowAsync();
+            if (result == ContentDialogResult::Primary)
+            {
+                SaveFile();
+            }
+            else if (result == ContentDialogResult::None)
+            {
+                co_return;
+            }
+            else
+            {
+                Application::Current().Exit();
+            }
+        }
+        else
+        {
+            Application::Current().Exit();
+        }
+    }
+
+    // SaveAs
 
     IAsyncAction MainPage::SaveFile()
     {
@@ -50,6 +87,7 @@ namespace winrt::Notepad::implementation
 
         if (auto file = co_await picker.PickSaveFileAsync())
         {
+            UpdateTitleText(file.Name());
             // Prevent remote access to file until saving is done
             CachedFileManager::DeferUpdates(file);
             
@@ -60,6 +98,8 @@ namespace winrt::Notepad::implementation
 
             // Let Windows know stuff is done
             co_await Windows::Storage::CachedFileManager::CompleteUpdatesAsync(file);
+
+            m_file = file;
         }
     }
 
@@ -81,8 +121,11 @@ namespace winrt::Notepad::implementation
         StorageFile file = co_await openPicker.PickSingleFileAsync();
         if (file != nullptr)
         {
+            /*currentFile = file;*/
             UpdateTitleText(file.Name());
-            // Clear previous returned file text.
+            // Clear previous returned file text & file.
+            m_file = nullptr;
+            m_file = file;
             inputText().Text(L""); 
             hstring fileContent = co_await FileIO::ReadTextAsync(file);
             inputText().Text(fileContent);// Application now has read/write access to the picked file  
@@ -95,11 +138,19 @@ namespace winrt::Notepad::implementation
         }
     }
 
+    void MainPage::FileAboutButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e)
+    {
+
+    }
+
     void MainPage::UpdateTitleText(hstring title) 
     {
         titleBarText().Text(title + L" - Notepad");
     }
 }
+
+
+
 
 
 
