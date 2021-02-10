@@ -55,6 +55,12 @@
     <Filter Include="Source">
       <UniqueIdentifier>{7af080ab-494e-48cb-8066-a3ef96830a13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dialog">
+      <UniqueIdentifier>{68a6f8db-9cfe-4eae-a9a2-232a4e5982a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ViewModel">
+      <UniqueIdentifier>{87806ca2-36d4-4042-a131-28b8a681faeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="PropertySheet.props" />

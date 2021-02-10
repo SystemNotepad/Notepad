@@ -1,4 +1,9 @@
 ﻿#pragma once
+
+#if (_MSC_VER >= 1915)
+#define no_init_all deprecated
+#endif
+
 #include <windows.h>
 #include <unknwn.h>
 #include <restrictederrorinfo.h>
@@ -13,6 +18,7 @@
 #include <winrt/Windows.UI.Xaml.Interop.h>
 #include <winrt/Windows.UI.Xaml.Markup.h>
 #include <winrt/Windows.UI.Xaml.Navigation.h>
+#include <winrt/Windows.Security.Cryptography.h>
 
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Search.h>

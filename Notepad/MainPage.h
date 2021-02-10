@@ -19,12 +19,15 @@ namespace winrt::Notepad::implementation
         void FileExit_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
         void FileOpenButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
         void FileAboutButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
+        void OnNavigatedTo(winrt::Windows::UI::Xaml::Navigation::NavigationEventArgs const& e);
+        
 
     private:
         static hstring fileName;
         Windows::Foundation::IAsyncAction SaveFile();
         Windows::Foundation::IAsyncAction OpenFileAsync();
         Windows::Foundation::IAsyncAction ExitApp();
+        Windows::Foundation::IAsyncAction LoadFile(winrt::Windows::Storage::StorageFile const& file);
         void UpdateTitleText(hstring title);
         
     };

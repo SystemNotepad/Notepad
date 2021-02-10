@@ -145,3 +145,38 @@ void App::OnNavigationFailed(IInspectable const&, NavigationFailedEventArgs cons
 {
     throw hresult_error(E_FAIL, hstring(L"Failed to load Page ") + e.SourcePageType().Name);
 }
+
+void App::OnFileActivated(FileActivatedEventArgs const& args)
+{
+    Frame rootFrame{ nullptr };
+    auto content = Window::Current().Content();
+    if (content)
+    {
+        rootFrame = content.try_as<Frame>();
+    }
+
+    if (rootFrame == nullptr)
+    {
+        rootFrame = Frame();
+        if (rootFrame.Content() == nullptr)
+        {
+            // When the navigation stack isn't restored navigate to the first page,
+            // configuring the new page by passing required information as a navigation
+            // parameter
+            rootFrame.Navigate(xaml_typename<Notepad::MainPage>(), box_value(args));
+        }
+        // Place the frame in the current Window
+        Window::Current().Content(rootFrame);
+        // Ensure the current window is active
+        Window::Current().Activate();
+
+        // TITLEBAR STYLING
+        ApplicationView::GetForCurrentView().SetPreferredMinSize(Size(320, 500));
+        auto coreTitleBar = CoreApplication::GetCurrentView().TitleBar();
+        coreTitleBar.ExtendViewIntoTitleBar(true);
+        auto titleBar = ApplicationView::GetForCurrentView().TitleBar();
+        titleBar.BackgroundColor(Colors::Transparent());
+        titleBar.ButtonBackgroundColor(Colors::Transparent());
+        titleBar.ButtonInactiveBackgroundColor(Colors::Transparent());
+    }
+}

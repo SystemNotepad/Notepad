@@ -147,6 +147,36 @@ namespace winrt::Notepad::implementation
     {
         titleBarText().Text(title + L" - Notepad");
     }
+
+    void MainPage::OnNavigatedTo(winrt::Windows::UI::Xaml::Navigation::NavigationEventArgs const& e) 
+    {
+        auto content = e.Parameter();
+        auto args = content.try_as<winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs>();
+        if (args != nullptr)
+        {
+            if (args.Kind() == winrt::Windows::ApplicationModel::Activation::ActivationKind::File)
+            {
+                auto fileArgs = args.try_as<winrt::Windows::ApplicationModel::Activation::FileActivatedEventArgs>();
+                auto file = fileArgs.Files().GetAt(0);
+                LoadFile(file.try_as<winrt::Windows::Storage::StorageFile>());
+            }
+        }
+    }
+
+    IAsyncAction MainPage::LoadFile(winrt::Windows::Storage::StorageFile const& file)
+    {
+        if (file != nullptr)
+        {
+            /*currentFile = file;*/
+            UpdateTitleText(file.Name());
+            // Clear previous returned file text & file.
+            m_file = nullptr;
+            m_file = file;
+            inputText().Text(L"");
+            hstring fileContent = co_await FileIO::ReadTextAsync(file);
+            inputText().Text(fileContent);  
+        }
+    }
 }
 
 
