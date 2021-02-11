@@ -1,0 +1,11 @@
+//import "oaidl.idl";
+//import "ocidl.idl";
+
+namespace Notepad
+{
+	runtimeclass Document : Windows.UI.Xaml.Data.INotifyPropertyChanged
+	{
+		String FileName;
+		Windows.Storage.StorageFile NotepadFile{ get; set; };
+	}
+}
