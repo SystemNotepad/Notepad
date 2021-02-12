@@ -9,7 +9,6 @@ namespace winrt::Notepad::implementation
         MainPage();
 
         static hstring const& FileName() { return fileName; }
-        // static Windows::Storage::StorageFile const& CurrentFile() { return currentFile; }
 
         int32_t MyProperty();
         void MyProperty(int32_t value);
@@ -21,6 +20,7 @@ namespace winrt::Notepad::implementation
         void FileAboutButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
         void OnNavigatedTo(winrt::Windows::UI::Xaml::Navigation::NavigationEventArgs const& e);
         
+        
 
     private:
         static hstring fileName;
@@ -28,8 +28,12 @@ namespace winrt::Notepad::implementation
         Windows::Foundation::IAsyncAction OpenFileAsync();
         Windows::Foundation::IAsyncAction ExitApp();
         Windows::Foundation::IAsyncAction LoadFile(winrt::Windows::Storage::StorageFile const& file);
+        Windows::Foundation::IAsyncAction SaveFileAs();
         void UpdateTitleText(hstring title);
         
+    public:
+        void FileSaveAsButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
+        void inputText_TextChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::Controls::TextChangedEventArgs const& e);
     };
 }
 

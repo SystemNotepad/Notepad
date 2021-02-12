@@ -11,5 +11,6 @@ namespace winrt::Notepad::implementation
         void OnSuspending(IInspectable const&, Windows::ApplicationModel::SuspendingEventArgs const&);
         void OnNavigationFailed(IInspectable const&, Windows::UI::Xaml::Navigation::NavigationFailedEventArgs const&);
         void OnFileActivated(Windows::ApplicationModel::Activation::FileActivatedEventArgs const& args);
+        void OnShareTargetActivated(Windows::ApplicationModel::Activation::ShareTargetActivatedEventArgs const& args);
     };
 }

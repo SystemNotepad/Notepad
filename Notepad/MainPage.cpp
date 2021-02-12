@@ -14,11 +14,67 @@ namespace winrt::Notepad::implementation
 {
     // Global Variables:
     Windows::Storage::StorageFile m_file{ nullptr };
+    bool m_isfileModified = false;
 
     MainPage::MainPage()
     {
         InitializeComponent();
         titleBarText().Text(L"Untitled - Notepad");
+
+        // Handling close event:
+        
+
+    }
+
+    void MainPage::inputText_TextChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::Controls::TextChangedEventArgs const& e)
+    {
+        if (m_file != nullptr)
+        {
+            m_isfileModified = true;
+            UpdateTitleText(L"*" + m_file.Name());
+        }
+        else
+        {
+            inputText().Text() == L"" ? UpdateTitleText(L"Untitled") : UpdateTitleText(L"*Untitled");
+        }
+    }
+
+    void MainPage::FileSaveAsButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e)
+    {
+        SaveFileAs();
+    }
+
+    // SaveAs
+    IAsyncAction MainPage::SaveFileAs()
+    {
+        hstring suggestedFileName = m_file == nullptr ? L"Untitled" : m_file.Name();
+        auto picker = FileSavePicker();
+        picker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
+        picker.SuggestedFileName(suggestedFileName);
+        picker.FileTypeChoices().Insert(L"Text Documents", winrt::single_threaded_vector<hstring>({ L".txt" }));
+        picker.FileTypeChoices().Insert(L"All files", winrt::single_threaded_vector<hstring>({ L"." }));
+        picker.DefaultFileExtension(L".txt");
+
+        if (auto file = co_await picker.PickSaveFileAsync())
+        {
+            UpdateTitleText(file.Name());
+            // Prevent remote access to file until saving is done
+            CachedFileManager::DeferUpdates(file);
+
+            hstring userInput = inputText().Text();
+
+            // Write the stuff to the file
+            co_await FileIO::WriteTextAsync(file, userInput);
+
+            // Let Windows know stuff is done
+            co_await Windows::Storage::CachedFileManager::CompleteUpdatesAsync(file);
+
+            m_file = file;
+
+            UpdateTitleText(m_file.Name());
+
+            m_isfileModified = false;
+        }
     }
 
     int32_t MainPage::MyProperty()
@@ -38,7 +94,7 @@ namespace winrt::Notepad::implementation
 
     void MainPage::FileExit_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::UI::Xaml::RoutedEventArgs const&)
     {
-        ExitApp();   
+        ExitApp();
     }
 
     IAsyncAction MainPage::ExitApp()
@@ -67,39 +123,36 @@ namespace winrt::Notepad::implementation
                 Application::Current().Exit();
             }
         }
+        else if(m_isfileModified)
+        {
+            SaveFile();
+            Application::Current().Exit();
+        }
         else
         {
-            Application::Current().Exit();
+            co_return;
         }
     }
 
-    // SaveAs
-
     IAsyncAction MainPage::SaveFile()
     {
-        // Setup the picker
-        auto picker = FileSavePicker();
-        picker.SuggestedStartLocation(PickerLocationId::DocumentsLibrary);
-        picker.SuggestedFileName(L"Untitled");
-        picker.FileTypeChoices().Insert(L"Text Documents", winrt::single_threaded_vector<hstring>({ L".txt" }));
-        picker.FileTypeChoices().Insert(L"All files", winrt::single_threaded_vector<hstring>({ L"." }));
-        picker.DefaultFileExtension(L".txt");
-
-        if (auto file = co_await picker.PickSaveFileAsync())
+        if (m_file != nullptr)
         {
-            UpdateTitleText(file.Name());
-            // Prevent remote access to file until saving is done
-            CachedFileManager::DeferUpdates(file);
-            
-            hstring userInput = inputText().Text();
-
-            // Write the stuff to the file
-            co_await FileIO::WriteTextAsync(file, userInput);
-
-            // Let Windows know stuff is done
-            co_await Windows::Storage::CachedFileManager::CompleteUpdatesAsync(file);
-
-            m_file = file;
+            try
+            {
+                hstring userContent = inputText().Text();
+                co_await FileIO::WriteTextAsync(m_file, userContent);
+                m_isfileModified = false;
+                UpdateTitleText(m_file.Name());
+            }
+            catch (const std::exception&) // const hresult_error& ex
+            {
+                    
+            }        
+        }
+        else
+        {
+            SaveFileAs();
         }
     }
 
@@ -129,7 +182,7 @@ namespace winrt::Notepad::implementation
             inputText().Text(L""); 
             hstring fileContent = co_await FileIO::ReadTextAsync(file);
             inputText().Text(fileContent);// Application now has read/write access to the picked file  
-            
+            m_isfileModified = false;
         }
         else
         {
@@ -150,6 +203,8 @@ namespace winrt::Notepad::implementation
 
     void MainPage::OnNavigatedTo(winrt::Windows::UI::Xaml::Navigation::NavigationEventArgs const& e) 
     {
+        // TODO: Share target! 
+        // Please visit for more info: https://docs.microsoft.com/en-us/windows/uwp/app-to-app/receive-data
         auto content = e.Parameter();
         auto args = content.try_as<winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs>();
         if (args != nullptr)
@@ -175,9 +230,17 @@ namespace winrt::Notepad::implementation
             inputText().Text(L"");
             hstring fileContent = co_await FileIO::ReadTextAsync(file);
             inputText().Text(fileContent);  
+            m_isfileModified = false;
         }
     }
+
 }
+
+
+
+
+
+
 
 
 
